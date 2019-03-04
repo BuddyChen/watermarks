@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+  <meta charset="utf-8">
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="alert alert-info" role="alert">Load Your Photo Here:<input type="file" id="change" ></div>
+    <div class="alert alert-info" role="alert">Load Your Watermarks Here:<input type="file" id="change2"></div>
+    <button id="remark">Reprint Watermarks</button>
+    <!-- <button id="btn">生成图片</button> -->
+    <a href="" id="download" download="pic.jpg" class="alert-link">Click to Download</a>
+    <canvas id="myCanvas" width="540" height="723"></canvas>
+    <script>
+      var myDate = new Date();
+      var picCount = 1;
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+      // var btn = document.getElementById('btn')
+      var change = document.getElementById('change');
+      var change2 = document.getElementById('change2');
+      var download = document.getElementById('download');
+      var remark = document.getElementById('remark');
+      var img1 = new Image();
+      var img2 = new Image();
+      //deal with corssOrigin
+      img1.crossOrigin = 'anonymous';
+      img2.crossOrigin = 'anonymous';
+      //reposition canvas
+      canvas.style.left = "300px";
+      canvas.style.top = "300px";
+      canvas.style.position = "absolute";
+      change.onchange = function(event){
+        var file = event.target.files[0];
+        var url = window.URL.createObjectURL(file);
+        img1.src = url;
+      }
+      change2.onchange = function(event){
+        var file = event.target.files[0];
+        var url = window.URL.createObjectURL(file);
+        img2.src = url;
+      }
+      img1.onload = function(){
+        var width = img1.naturalWidth;
+        var height = img1.naturalHeight;
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(img1,0,0);
+        if (picCount != 1){
+          context.drawImage(img2,canvas.width-img2.naturalWidth,canvas.height-img2.naturalHeight);
+        }
+      }
+      img2.onload = function(){
+        var width2 = img2.naturalWidth;
+        var height2 = img2.naturalHeight;
+        console.log('canvasWidth'+canvas.width);
+        console.log('img width'+width2);
+        console.log('pos'+(canvas.width-width2));
+        context.drawImage(img2,canvas.width-width2,canvas.height-height2);
+      }
+
+      // btn.onclick = function(){
+      //  var img =  convertCanvasToImage(canvas);
+      //  var arr = img.src.split(',');
+      //  var mime = arr[0].match(/:(.*?);/)[1];
+      //  var bstr =  atob(arr[1]);
+      //  var n = bstr.length;
+      //  var u8arr = new Uint8Array(n);
+      //  while (n--) {
+      //      u8arr[n] = bstr.charCodeAt(n);
+      //  }
+      //  var blob = new Blob([u8arr],{type:mime});
+       
+      // }
+      
+      download.onclick = function(blob){
+        download.download = myDate.toLocaleDateString()+"_pic"+picCount+'.jpg';
+        picCount += 1;
+
+        var img =  convertCanvasToImage(canvas);
+        
+        var arr = img.src.split(',');
+        var mime = arr[0].match(/:(.*?);/)[1];
+        var bstr =  atob(arr[1]);
+        var n = bstr.length;
+        var u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        var blob = new Blob([u8arr],{type:mime});
+
+        // console.log(img);
+        download.href = img.src;
+      }
+
+      function convertCanvasToImage(canvas) {
+	      var image = new Image();
+	      image.src = canvas.toDataURL("image/jpg");
+	      return image;
+      }
+
+      //remark watermarks
+      remark.onclick = function(){
+        context.drawImage(img2,canvas.width-img2.naturalWidth,canvas.height-img2.naturalHeight);
+      }
+      
+    </script>
+  </body>
+</html> 
