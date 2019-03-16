@@ -20,6 +20,8 @@
     <div class="alert alert-info" role="alert">Load Your Photo Here:<input type="file" id="change" ></div>
     <div class="alert alert-info" role="alert">Load Your Watermarks Here:<input type="file" id="change2"></div>
     <button id="remark">Reprint Watermarks</button>
+    <button id="sizeControl">Reduce Photo Size</button>
+<!--     <button id="translate">90°translate</button> -->
     <!-- <button id="btn">生成图片</button> -->
     <a href="" id="download" download="pic.jpg" class="alert-link">Click to Download</a>
     <canvas id="myCanvas" width="540" height="723"></canvas>
@@ -35,6 +37,8 @@
       var remark = document.getElementById('remark');
       var img1 = new Image();
       var img2 = new Image();
+      var sizeControl = document.getElementById('sizeControl');
+//       var translate = document.getElementById('translate');
       //deal with corssOrigin
       img1.crossOrigin = 'anonymous';
       img2.crossOrigin = 'anonymous';
@@ -55,13 +59,16 @@
       img1.onload = function(){
         var width = img1.naturalWidth;
         var height = img1.naturalHeight;
+        console.log(width);
+        console.log(height);            
         canvas.width = width;
         canvas.height = height;
-        context.drawImage(img1,0,0);
+        context.drawImage(img1,0,0,width,height);
         if (picCount != 1){
-          context.drawImage(img2,canvas.width-img2.naturalWidth,canvas.height-img2.naturalHeight);
+          context.drawImage(img2,canvas.width-img2.naturalWidth,canvas.height-img2.naturalHeight,canvas.width,canvas.height);
         }
       }
+      
       img2.onload = function(){
         var width2 = img2.naturalWidth;
         var height2 = img2.naturalHeight;
@@ -116,6 +123,34 @@
       remark.onclick = function(){
         context.drawImage(img2,canvas.width-img2.naturalWidth,canvas.height-img2.naturalHeight);
       }
+      
+      //sizeControl
+      sizeControl.onclick = function(){
+    	let width = img1.naturalWidth;
+        let height = img1.naturalHeight;
+        while(width >= 800 || height>= 1000){
+        	width *= 0.9;
+        	height *= 0.9;
+        }
+        console.log(width);
+        console.log(height);            
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(img1,0,0,width,height);
+        if (picCount != 1){
+          context.drawImage(img2,canvas.width-img2.naturalWidth,canvas.height-img2.naturalHeight,canvas.width,canvas.height);
+        }
+      }
+    
+//       translate.onclick = function(){
+//       	var a = canvas.width;
+//       	var b = canvas.height;
+//       	canvas.width = b;
+//       	canvas.height = a;
+//       	context.translate(b/2,a/2);
+//       	context.rotate(Math.PI/2);
+//       	context.drawImage(img1,-a/2,-b/2,a,b);
+//       }
       
     </script>
   </body>
